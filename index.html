@@ -156,6 +156,7 @@
         };
 
         let currentType = '';
+        let currentReactionIndex = -1;
         let currentReaction = null;
         let coefficients = { r: [], p: [] };
 
@@ -174,6 +175,7 @@
             document.querySelectorAll('#type-selector button').forEach(b => b.classList.remove('border-indigo-600', 'bg-indigo-50', 'text-indigo-700'));
             btn.classList.add('border-indigo-600', 'bg-indigo-50', 'text-indigo-700');
             currentType = type;
+            currentReactionIndex = -1; // Reset index for new category
             document.getElementById('workspace').classList.remove('hidden');
             document.getElementById('reaction-category').innerText = type.replace('_', ' ');
             loadRandomReaction();
@@ -181,7 +183,19 @@
 
         function loadRandomReaction() {
             const list = reactions[currentType];
-            const reactionData = list[Math.floor(Math.random() * list.length)];
+            let newIndex;
+            
+            // Ensure we don't pick the same one twice in a row if there are multiple
+            if (list.length > 1) {
+                do {
+                    newIndex = Math.floor(Math.random() * list.length);
+                } while (newIndex === currentReactionIndex);
+            } else {
+                newIndex = 0;
+            }
+            
+            currentReactionIndex = newIndex;
+            const reactionData = list[currentReactionIndex];
             currentReaction = JSON.parse(JSON.stringify(reactionData));
             resetCoefficients();
         }
